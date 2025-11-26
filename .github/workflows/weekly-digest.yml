@@ -1,0 +1,37 @@
+# .github/workflows/weekly-digest.yml
+
+name: Weekly Stock Market Digest 🚀
+
+on:
+  schedule:
+    # Runs every Friday at 4:30 PM Eastern Time (21:30 UTC/GMT during Standard Time)
+    # Cron syntax: (minute hour day-of-month month day-of-week)
+    - cron: '30 21 * * FRI' 
+  workflow_dispatch: # Allows you to run the job manually for immediate testing
+
+jobs:
+  run-digest-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        # Install packages needed for the digest script (cross-env, dotenv, resend, etc.)
+        run: npm install
+
+      - name: Execute Friday Digest Script
+        # Executes the 'digest' script defined in your package.json
+        run: npm run digest
+        env:
+          # Expose the GitHub Secrets to the script environment
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
